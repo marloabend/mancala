@@ -1,0 +1,29 @@
+<div class="noselect">
+  <h1 class="mb-4">Ouril</h1>
+  <div class="border rounded p-3">
+    <div class="row g-3">
+      <div class="col-2" *ngFor="let pit of pitsReordered">
+        <app-pit [pit]="pit" (selectPit)="onSelectPit($event)"></app-pit>
+      </div>
+    </div>
+  </div>
+  {{clickCounter}}
+  <details class="mt-3">
+    <summary>Regeln</summary>
+    <ul class="small text-secondary">
+      <li>Zu Beginn des Spieles sind in jeder Mulde 4 Steine.</li>
+      <li>Es wird Zug um Zug abwechselnd gespielt.</li>
+      <li>Bei einem Zug nimmt der Spieler alle Steine aus einer Mulde seiner Seite und verteilt sie entgegen dem Uhrzeigersinn auf alle folgenden Mulden des Bretts, auch auf die gegnerische Seite.</li>
+      <li>Sollten in der für den Zug gewählten Mulde mehr als 11 Steine sein, so wird bei der ersten Umrundung die Startmulde freigelassen.</li>
+      <li>Landet der letzte Stein in einer Mulde des Gegners, und sind in dieser Mulde nun 2 oder 3 Steine, so gewinnt der Spieler diese Steine.</li>
+      <li>Befinden sich vor der Mulde mit den geschlagenen Steinen (gegen den Uhrzeigersinn) nun ebenfalls 2 oder 3 Steine so gewinnt der Spiele diese ebenfalls. Dies kann beliebig oft (auf der gegnerischen Seite) wiederholt werden.</li>
+      <li>Eine Mulde mit 1 oder 4 (oder mehr) Steinen stoppt das Herausnehmen gegen die eigentliche Spielrichtung.</li>
+      <li>Sollte ein Spieler auf seiner Seite keine Steine mehr haben, so muss der zweite Spieler einen Zug machen, der aus seiner Seite Steine auf die gegnerische Seite führt.</li>
+      <li>Ist dies nicht möglich, so gewinnt der zweite Spieler alle verbleibenden Steine auf seiner Seite.</li>
+      <li>Gewinner ist, wer zuerst 25 oder mehr Steine geschlagen hat.</li>
+    </ul>
+    <div class="small">
+      from <a href="https://https://de.wikipedia.org/wiki/Ouril">Wikipedia</a>
+    </div>
+  </details>
+</div>
