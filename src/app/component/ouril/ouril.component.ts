@@ -1,43 +1,52 @@
 import {Component} from '@angular/core';
-import {Pit} from "../../model/pit.model";
+import {Ouril} from './ouril';
+import {Player} from './type/player.type';
+import {PlayerStats} from './model/player-stats.model';
+import {Variant} from './type/variant.type';
+import {Pit} from './model/pit.model';
+import {PitComponent} from '../pit/pit.component';
+import {CommonModule} from '@angular/common';
 
 @Component({
   selector: 'app-ouril',
-  templateUrl: './ouril.component.html'
+  templateUrl: './ouril.component.html',
+  standalone: true,
+  imports: [CommonModule, PitComponent]
 })
 export class OurilComponent {
 
-  clickCounter: number = 0;
+  variant: Variant = 'default';
+  game: Ouril;
 
-  private pits: Pit[] = Array(12)
-    .fill({index: 0, value: 4})
-    .map(((pit, index) => ({...pit, index})));
+  constructor() {
+    this.initGame();
+  }
 
-  get pitsReordered() {
-    return [...this.pits.slice(6, 12).reverse(), ...this.pits.slice(0, 6)]
+  get currentPlayer(): Player {
+    return this.game.getCurrentPlayer();
+  };
+
+  get stats(): Map<Player, PlayerStats> {
+    return this.game.getStats();
+  }
+
+  get movesOverall(): number {
+    return this.game.getMoves('A') + this.game.getMoves('B');
+  }
+
+  getPits(player: Player, reverse: boolean = false): Pit[] {
+    return this.game.getPits(player, reverse);
   }
 
   onSelectPit(index: number): void {
-    const pit = this.getPit(index);
-    let peas = 0;
-    if (pit) {
-      peas = pit.value || 0;
-      pit.value = 0;
-    }
-    if (peas > 0) {
-      this.clickCounter++;
-    }
-    while (peas > 0) {
-      index = index === this.pits.length - 1 ? 0 : (index + 1)
-      let currentPit = this.getPit(index);
-      if (currentPit) {
-        currentPit.value++;
-        peas--;
-      }
-    }
+    this.game.move(index);
   }
 
-  private getPit(index: number): Pit | undefined {
-    return this.pits.find(pit => pit.index === index);
+  onReset(): void {
+    this.initGame();
+  }
+
+  private initGame(): void {
+    this.game = new Ouril(this.variant);
   }
 }

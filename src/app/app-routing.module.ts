@@ -1,8 +1,6 @@
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
-import {OurilComponent} from "./component/ouril/ouril.component";
-import {OwareComponent} from "./component/oware/oware.component";
-import {HomeComponent} from "./component/home/home.component";
+import {HomeComponent} from './component/home/home.component';
 
 const routes: Routes = [
   {
@@ -11,11 +9,11 @@ const routes: Routes = [
   },
   {
     path: 'ouril',
-    component: OurilComponent
+    loadComponent: () => import('./component/ouril/ouril.component').then((c) => c.OurilComponent),
   },
   {
     path: 'oware',
-    component: OwareComponent
+    loadComponent: () => import('./component/oware/oware.component').then((c) => c.OwareComponent),
   }
 ];
 

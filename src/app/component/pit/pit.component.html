@@ -1,5 +1,11 @@
-<div class="d-flex align-items-center justify-content-center border rounded-5 p-4 cursor-pointer"
-     (click)="selectPit.emit(pit.index)">
-  <div class="h1 mb-0">{{pit.value}}</div>
-  <div class="small text-secondary">{{pit.index}}</div>
+<div class="pit-wrapper cursor-pointer">
+  <div class="pit" (click)="onClick()">
+    <div class="p-3">
+      <div class="row g-1 align-items-center justify-content-around">
+        <div [class]="value > 2 ? 'col-4' : 'col-6'" *ngFor="let i of valueArray">
+          <div class="bean"></div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

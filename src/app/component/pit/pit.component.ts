@@ -1,12 +1,26 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
-import {Pit} from "../../model/pit.model";
+import {CommonModule} from '@angular/common';
 
 @Component({
   selector: 'app-pit',
   templateUrl: './pit.component.html',
-  styleUrls: ['./pit.component.scss']
+  styleUrls: ['./pit.component.scss'],
+  standalone: true,
+  imports: [CommonModule]
 })
 export class PitComponent {
-  @Input() pit: Pit;
-  @Output() selectPit = new EventEmitter<number>();
+
+  @Input() value: number;
+
+  @Output() selectPit = new EventEmitter<void>();
+
+  get valueArray(): number[] {
+    return Array(this.value || 0)
+      .fill(null)
+      .map((_, i) => i)
+  }
+
+  onClick(): void {
+    this.selectPit.emit();
+  }
 }

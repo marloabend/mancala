@@ -1,16 +1,52 @@
-<div class="noselect">
-  <h1 class="mb-4">Ouril</h1>
-  <div class="border rounded p-3">
-    <div class="row g-3">
-      <div class="col-2" *ngFor="let pit of pitsReordered">
-        <app-pit [pit]="pit" (selectPit)="onSelectPit($event)"></app-pit>
+<div class="noselect" *ngIf="game">
+  <header class="row mb-2 align-items-center">
+    <div class="col">
+      <h1 class="mb-0">Ouril</h1>
+    </div>
+    <div class="col-auto">
+      <span class="badge bg-secondary">{{movesOverall}} moves overall</span>
+    </div>
+    <div class="col-auto">
+      <button class="btn btn-sm btn-danger" (click)="onReset()">Reset</button>
+    </div>
+  </header>
+  <main>
+    <div class="d-flex py-2 align-items-center justify-content-between">
+      <h4 class="mb-0 text-secondary">B</h4>
+      <div class="badge bg-secondary" *ngIf="currentPlayer === 'B'">Move</div>
+      <div>Score: <b>{{stats.get('B')?.score}}</b> | Moves: <b>{{stats.get('B')?.moves}}</b></div>
+    </div>
+    <div class="wood border p-3 rounded-5">
+      <div class="row gx-3 justify-content-around">
+        <div *ngFor="let pit of getPits('B', true)" [class]="variant === 'kids' ? 'col-3' : 'col-2'">
+          <app-pit [value]="pit.value" (selectPit)="onSelectPit(pit.index)"></app-pit>
+        </div>
       </div>
     </div>
-  </div>
-  {{clickCounter}}
-  <details class="mt-3">
+    <div class="row justify-content-around">
+      <div class="col-auto hinge text-center text-secondary" *ngFor="let _ of [1, 2]">
+        <div class="bg-dark py-1">
+          <hr class="my-0 px-3">
+        </div>
+      </div>
+    </div>
+    <div class="wood border p-3 rounded-5">
+      <div class="row gx-3 justify-content-around">
+        <div *ngFor="let pit of getPits('A')" [class]="variant === 'kids' ? 'col-3' : 'col-2'">
+          <app-pit [value]="pit.value" (selectPit)="onSelectPit(pit.index)"></app-pit>
+        </div>
+      </div>
+    </div>
+    <div class="d-flex py-2 align-items-center justify-content-between">
+      <h4 class="mb-0 text-secondary">A</h4>
+      <div class="badge bg-secondary" *ngIf="currentPlayer === 'A'">Move</div>
+      <div>Score: <b>{{stats.get('A')?.score}}</b> | Moves: <b>{{stats.get('A')?.moves}}</b></div>
+    </div>
+  </main>
+  <hr>
+  <details class="mt-2">
     <summary>Regeln</summary>
-    <ul class="small text-secondary">
+    <ul class="small text-secondary mt-2">
       <li>Zu Beginn des Spieles sind in jeder Mulde 4 Steine.</li>
       <li>Es wird Zug um Zug abwechselnd gespielt.</li>
       <li>Bei einem Zug nimmt der Spieler alle Steine aus einer Mulde seiner Seite und verteilt sie entgegen dem Uhrzeigersinn auf alle folgenden Mulden des Bretts, auch auf die gegnerische Seite.</li>
@@ -23,7 +59,7 @@
       <li>Gewinner ist, wer zuerst 25 oder mehr Steine geschlagen hat.</li>
     </ul>
     <div class="small">
-      from <a href="https://https://de.wikipedia.org/wiki/Ouril">Wikipedia</a>
+      from <a href="https://de.wikipedia.org/wiki/Ouril" target="_blank">Wikipedia</a>
     </div>
   </details>
 </div>
