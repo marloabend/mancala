@@ -70,20 +70,20 @@ export class Ouril {
     this.stats.addToHistory(index);
 
     // Sowing
-    let peas = pit.collect();
-    let skipFirstPut = peas > 11 ? index : null;
+    let seeds = pit.collect();
+    let skipFirstSowing = seeds > 11 ? index : null;
 
-    while (peas > 0) {
+    while (seeds > 0) {
       index = index === this.pits.length - 1 ? 0 : index + 1;
       pit = this.pits[index];
 
-      if (index === skipFirstPut) {
-        skipFirstPut = null;
+      if (index === skipFirstSowing) {
+        skipFirstSowing = null;
         continue;
       }
 
       pit.put(1);
-      peas--;
+      seeds--;
     }
 
     // Capturing
