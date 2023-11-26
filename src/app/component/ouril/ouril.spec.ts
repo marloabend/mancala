@@ -9,7 +9,7 @@ describe('Ouril', () => {
   });
 
   it('should create new game', () => {
-    expect(game instanceof Ouril).toBeTrue();
+    expect(game).toBeTruthy();
   });
 
   it('should have correct amount of pits in default mode', () => {
@@ -30,11 +30,11 @@ describe('Ouril', () => {
   it('should play simple move correctly', () => {
     game.move(0);
     const pits = game.getPits();
-    expect(pits[0].value).toEqual(0);
-    expect(pits[1].value).toEqual(5);
-    expect(pits[2].value).toEqual(5);
-    expect(pits[3].value).toEqual(5);
-    expect(pits[4].value).toEqual(5);
-    expect(pits[5].value).toEqual(4);
+    expect(pits[0].getValue()).toEqual(0);
+    expect(pits[1].getValue()).toEqual(5);
+    expect(pits[2].getValue()).toEqual(5);
+    expect(pits[3].getValue()).toEqual(5);
+    expect(pits[4].getValue()).toEqual(5);
+    expect(pits[5].getValue()).toEqual(4);
   })
 });

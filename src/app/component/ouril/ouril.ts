@@ -1,7 +1,8 @@
-import {Pit} from './model/pit.model';
-import {Player} from './type/player.type';
-import {Stats} from './model/player-stats.model';
-import {Variant} from './type/variant.type';
+import {Pit} from '../../model/pit.model';
+import {Player} from '../../type/player.type';
+import {Stats} from "../../model/player-stats.model";
+
+export type Variant = 'default' | 'kids';
 
 export class Ouril {
 

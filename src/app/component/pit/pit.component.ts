@@ -10,7 +10,6 @@ import {
   SimpleChanges,
   ViewChild
 } from '@angular/core';
-import {CommonModule} from '@angular/common';
 import * as d3 from 'd3';
 import {Selection} from 'd3';
 
@@ -22,8 +21,6 @@ interface NodeData extends d3.SimulationNodeDatum {
   selector: 'app-pit',
   templateUrl: './pit.component.html',
   styleUrls: ['./pit.component.scss'],
-  standalone: true,
-  imports: [CommonModule]
 })
 export class PitComponent implements AfterViewInit, OnChanges {
 

@@ -1,19 +1,13 @@
 import {Component} from '@angular/core';
-import {Ouril} from './ouril';
-import {Player} from './type/player.type';
-import {Stats} from './model/player-stats.model';
-import {Variant} from './type/variant.type';
-import {Pit} from './model/pit.model';
-import {PitComponent} from '../pit/pit.component';
-import {CommonModule} from '@angular/common';
-import {FormsModule} from '@angular/forms';
+import {Ouril, Variant} from './ouril';
+import {Player} from '../../type/player.type';
+import {Pit} from '../../model/pit.model';
+import {Stats} from '../../model/player-stats.model';
 
 @Component({
   selector: 'app-ouril',
   templateUrl: './ouril.component.html',
   styleUrls: ['./ouril.component.scss'],
-  standalone: true,
-  imports: [CommonModule, FormsModule, PitComponent]
 })
 export class OurilComponent {
 
