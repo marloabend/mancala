@@ -128,7 +128,7 @@ export class Ouril {
   }
 
   private isFeedingPit(pit: Pit): boolean {
-    return pit.getIndex() % 6 + pit.getValue() >= Ouril.pitCount(this.variant) / 2;
+    return pit.getIndex() % (this.pits.length / 2) + pit.getValue() >= (this.pits.length / 2);
   }
 
   private isOwnPit(pit: Pit, player: Player = this.currentPlayer): boolean {
