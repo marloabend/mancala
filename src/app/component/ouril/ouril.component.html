@@ -1,50 +1,50 @@
 <div class="noselect" *ngIf="game">
-  <header class="row mb-2 align-items-center">
-    <div class="col">
+  <header class="row mb-2 align-items-center justify-content-between">
+    <div class="col-auto">
       <h1 class="mb-0">Ouril</h1>
     </div>
-    <div class="col-auto">
-      <span class="badge bg-secondary">{{movesOverall}} moves overall</span>
-    </div>
+    <div class="col-auto h2 mb-0 text-success" *ngIf="stats.winner">{{stats.winner}} wins !</div>
     <div class="col-auto">
       <button class="btn btn-sm btn-danger" (click)="onReset()">Reset</button>
     </div>
   </header>
   <main>
-    <div class="d-flex py-2 align-items-center justify-content-between">
+    <div class="d-flex my-3 align-items-center justify-content-between">
       <h4 class="mb-0 text-secondary">B</h4>
-      <div class="badge bg-secondary" *ngIf="currentPlayer === 'B'">Move</div>
-      <div>Score: <b>{{stats.get('B')?.score}}</b> | Moves: <b>{{stats.get('B')?.moves}}</b></div>
+      <div>Score: <b>{{stats.player.B.score}}</b> | Moves: <b>{{stats.player.B.moves}}</b></div>
     </div>
-    <div class="wood border p-3 rounded-5">
+    <div class="wood p-3 border border-dark rounded-5"
+         [class.current-player]="currentPlayer === 'B'"
+         [class.winning-player]="stats.winner === 'B'">
       <div class="row gx-3 justify-content-around">
-        <div *ngFor="let pit of getPits('B', true)" [class]="variant === 'kids' ? 'col-3' : 'col-2'">
-          <app-pit [value]="pit.value" (selectPit)="onSelectPit(pit.index)"></app-pit>
+        <div *ngFor="let pit of pits.B" [class]="variant === 'kids' ? 'col-3' : 'col-2'">
+          <app-pit [disabled]="!validMoves.includes(pit.getIndex())" [value]="pit.getValue()" (selectPit)="onMove(pit)"></app-pit>
         </div>
       </div>
     </div>
     <div class="row justify-content-around">
-      <div class="col-auto hinge text-center text-secondary" *ngFor="let _ of [1, 2]">
+      <div class="col-auto text-center text-secondary" *ngFor="let _ of [1, 2]">
         <div class="bg-dark py-1">
           <hr class="my-0 px-3">
         </div>
       </div>
     </div>
-    <div class="wood border p-3 rounded-5">
+    <div class="wood p-3 border border-dark rounded-5"
+         [class.current-player]="currentPlayer === 'A'"
+         [class.winning-player]="stats.winner === 'A'">
       <div class="row gx-3 justify-content-around">
-        <div *ngFor="let pit of getPits('A')" [class]="variant === 'kids' ? 'col-3' : 'col-2'">
-          <app-pit [value]="pit.value" (selectPit)="onSelectPit(pit.index)"></app-pit>
+        <div *ngFor="let pit of pits.A" [class]="variant === 'kids' ? 'col-3' : 'col-2'">
+          <app-pit [disabled]="!validMoves.includes(pit.getIndex())" [value]="pit.getValue()" (selectPit)="onMove(pit)"></app-pit>
         </div>
       </div>
     </div>
-    <div class="d-flex py-2 align-items-center justify-content-between">
+    <div class="d-flex my-3 align-items-center justify-content-between">
       <h4 class="mb-0 text-secondary">A</h4>
-      <div class="badge bg-secondary" *ngIf="currentPlayer === 'A'">Move</div>
-      <div>Score: <b>{{stats.get('A')?.score}}</b> | Moves: <b>{{stats.get('A')?.moves}}</b></div>
+      <div>Score: <b>{{stats.player.A.score}}</b> | Moves: <b>{{stats.player.A.moves}}</b></div>
     </div>
   </main>
   <hr>
-  <details class="mt-2">
+  <details>
     <summary>Regeln</summary>
     <ul class="small text-secondary mt-2">
       <li>Zu Beginn des Spieles sind in jeder Mulde 4 Steine.</li>

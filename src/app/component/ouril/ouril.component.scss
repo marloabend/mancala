@@ -1,0 +1,12 @@
+.wood {
+  background: #422f2f;
+  transition: all .2s ease;
+
+  &.current-player {
+    box-shadow: inset 0 0 0 .25rem var(--bs-warning);
+  }
+
+  &.winning-player {
+    box-shadow: inset 0 0 0 .5rem var(--bs-success);
+  }
+}

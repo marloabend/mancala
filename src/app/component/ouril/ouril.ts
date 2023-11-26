@@ -1,143 +1,140 @@
 import {Pit} from './model/pit.model';
 import {Player} from './type/player.type';
-import {PlayerStats} from './model/player-stats.model';
+import {Stats} from './model/player-stats.model';
 import {Variant} from './type/variant.type';
 
 export class Ouril {
 
   private readonly variant: Variant;
   private readonly pits: Pit[];
-  private readonly stats: Map<Player, PlayerStats>;
+  private readonly stats: Stats;
   private currentPlayer: Player;
 
   constructor(variant: Variant = 'default') {
     this.variant = variant;
-    this.pits = Ouril.emptyPits(this.variant === 'kids' ? 8 : 12);
+    this.pits = Pit.emptyPits(Ouril.pitCount(variant));
     this.currentPlayer = 'A';
-    this.stats = new Map((['A', 'B'] as Player[]).map(player => [player, Ouril.emptyStats(player)]));
+    this.stats = new Stats();
   }
 
-  private static emptyPits(count: number): Pit[] {
-    return Array(count)
-      .fill({index: 0, value: 4})
-      .map(((pit, index) => ({...pit, index})));
-  }
-
-  private static emptyStats(player: Player): PlayerStats {
-    return {player, moves: 0, score: 0};
+  private static pitCount(variant: Variant): number {
+    return variant === 'kids' ? 8 : 12;
   }
 
   getVariant(): Variant {
     return this.variant;
   }
 
-  getPits(player?: Player, reverse = false): Pit[] {
-    let pits = this.pits;
-    if (player) {
-      const numPits = this.pits.length;
-      const sliceStart = player === 'A' ? 0 : numPits / 2;
-      const sliceEnd = player === 'A' ? numPits / 2 : numPits;
-      pits = pits.slice(sliceStart, sliceEnd);
+  getPits(player?: Player): Pit[] {
+    if (player === 'A') {
+      return this.pits.slice(0, this.pits.length / 2);
+    } else if (player === 'B') {
+      return this.pits.slice(this.pits.length / 2);
     }
-    return reverse ? pits.reverse() : pits;
+    return this.pits;
   }
 
   getCurrentPlayer(): Player {
     return this.currentPlayer;
   }
 
-  getStats(): Map<Player, PlayerStats> {
+  getStats(): Stats {
     return this.stats;
   }
 
-  getMoves(player: Player): number {
-    return this.stats.get(player)?.moves || 0;
+  getValidMoves(player = this.currentPlayer): number[] {
+    return this.getPits(player)
+      .filter(pit => this.isValidMove(pit.getIndex(), player))
+      .map(pit => pit.getIndex());
   }
 
-  getScore(player: Player): number {
-    return this.stats.get(player)?.score || 0;
+  isValidMove(index: number, player: Player = this.currentPlayer): boolean {
+    const pit = this.pits[index];
+    const mustFeed = this.playerPitsEmpty(this.opponent(player));
+
+    return !this.stats.winner && this.isOwnPit(pit, player) && !pit?.isEmpty() && (!mustFeed || this.isFeedingPit(pit));
   }
 
   move(index: number): void {
-    const pit = this.getPit(index);
+    if (!this.isValidMove(index)) {
+      return;
+    }
+
+    let pit = this.pits[index];
     if (!pit) {
       return;
     }
 
-    let peas = pit.value || 0;
-    if (peas <= 0 || !this.isOwnPit(pit)) {
-      return;
-    }
+    this.stats.raiseMoves(this.currentPlayer);
+    this.stats.addToHistory(index);
 
-    pit.value = 0;
-    this.raiseMoves(this.currentPlayer);
-
-    let skipFirstPut = peas > 11;
-    let currentPit;
+    // Sowing
+    let peas = pit.collect();
+    let skipFirstPut = peas > 11 ? index : null;
 
     while (peas > 0) {
       index = index === this.pits.length - 1 ? 0 : index + 1;
+      pit = this.pits[index];
 
-      currentPit = this.getPit(index);
-      if (!currentPit) {
-        break;
-      }
-
-      if (skipFirstPut && currentPit.index === pit.index) {
-        skipFirstPut = false;
+      if (index === skipFirstPut) {
+        skipFirstPut = null;
         continue;
       }
 
-      currentPit.value++;
+      pit.put(1);
       peas--;
     }
 
-    if (!currentPit) {
+    // Capturing
+    while (!this.isOwnPit(pit) && (pit.getValue() === 2 || pit.getValue() === 3)) {
+      this.stats.raiseScore(this.currentPlayer, pit.collect());
+
+      index = index === 0 ? this.pits.length - 1 : index - 1;
+      pit = this.pits[index];
+    }
+
+    if (this.stats.winner) {
       return;
     }
 
-    while (this.isWinningPit(currentPit)) {
-      this.raiseScore(this.currentPlayer, currentPit.value);
-      currentPit.value = 0;
-
-      if (this.getScore(this.currentPlayer) >= 25) {
-        alert(this.currentPlayer + ' wins!!!');
+    if (this.playerPitsEmpty()) {
+      if (this.canMove(this.opponent())) {
+        this.currentPlayer = this.opponent();
+      } else {
+        this.captureAll(this.opponent());
       }
-
-      index = index === 0 ? this.pits.length - 1 : index - 1;
-      currentPit = this.getPit(index);
-      if (!currentPit) {
-        break;
+    } else if (this.playerPitsEmpty(this.opponent())) {
+      if (this.canMove()) {
+        return;
+      } else {
+        this.captureAll();
       }
+    } else {
+      this.currentPlayer = this.opponent();
     }
-
-    this.changePlayer();
   }
 
-  private getPit(index: number): Pit | undefined {
-    return this.pits.find(pit => pit.index === index);
+  private playerPitsEmpty(player: Player = this.currentPlayer): boolean {
+    return this.getPits(player).reduce((sum, pit) => sum + pit.getValue(), 0) <= 0;
   }
 
-  private isOwnPit(pit: Pit): boolean {
-    return this.getPits(this.currentPlayer)?.includes(pit) || false;
+  private canMove(player: Player = this.currentPlayer): boolean {
+    return this.getPits(player).some(pit => this.isValidMove(pit.getIndex(), player));
   }
 
-  private isWinningPit(pit: Pit): boolean {
-    return !this.isOwnPit(pit) && (pit.value === 2 || pit.value === 3);
+  private captureAll(player: Player = this.currentPlayer): void {
+    this.getPits(player).forEach(pit => this.stats.raiseScore(player, pit.collect()));
   }
 
-  private changePlayer(): void {
-    this.currentPlayer = this.currentPlayer === 'A' ? 'B' : 'A';
+  private isFeedingPit(pit: Pit): boolean {
+    return pit.getIndex() % 6 + pit.getValue() >= Ouril.pitCount(this.variant) / 2;
   }
 
-  private raiseMoves(player: Player): void {
-    const stats = this.stats.get(player) || Ouril.emptyStats(player);
-    this.stats.set(player, {...stats, moves: stats.moves + 1});
+  private isOwnPit(pit: Pit, player: Player = this.currentPlayer): boolean {
+    return this.getPits(player)?.includes(pit) || false;
   }
 
-  private raiseScore(player: Player, amount: number): void {
-    const stats = this.stats.get(player) || Ouril.emptyStats(player);
-    this.stats.set(player, {...stats, score: stats.score + amount});
+  private opponent(player: Player = this.currentPlayer): Player {
+    return player === 'A' ? 'B' : 'A';
   }
 }
-

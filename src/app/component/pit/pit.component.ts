@@ -10,6 +10,7 @@ import {CommonModule} from '@angular/common';
 })
 export class PitComponent {
 
+  @Input() disabled = false;
   @Input() value: number;
 
   @Output() selectPit = new EventEmitter<void>();
@@ -21,6 +22,8 @@ export class PitComponent {
   }
 
   onClick(): void {
-    this.selectPit.emit();
+    if (!this.disabled) {
+      this.selectPit.emit();
+    }
   }
 }
