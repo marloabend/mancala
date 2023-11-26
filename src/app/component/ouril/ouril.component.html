@@ -62,4 +62,28 @@
       from <a href="https://de.wikipedia.org/wiki/Ouril" target="_blank">Wikipedia</a>
     </div>
   </details>
+  <hr>
+  <details open>
+    <summary>Moves</summary>
+    <div class="row mt-2">
+      <div class="col-sm-6 mb-3">
+        <label class="form-label">History ({{stats.moves}} moves)</label><br>
+        <textarea class="form-control" rows="3" readonly disabled>{{stats.history.toString()}}</textarea>
+      </div>
+      <form class="col-sm-6 mb-3" (submit)="onPlayAutoMoves()">
+        <label class="form-label" for="autoMoves">Auto moves</label>
+        <input class="form-control" name="autoMoves" id="autoMoves" [(ngModel)]="autoMovesString">
+        <div class="row gx-3 mt-2 align-items-center">
+          <div class="col-auto">
+            <button class="btn btn-secondary me-2" type="submit" (click)="onPlayAutoMoves()">Play</button>
+            <button class="btn btn-danger" type="button" (click)="onStopAutoMoves()">Stop</button>
+          </div>
+          <div class="col d-flex align-items-center">
+            <input class="form-control me-2" type="number" min="0" id="loopTime" name="loopTime" [(ngModel)]="autoMoveLoopTime">
+            <label for="loopTime">ms</label>
+          </div>
+        </div>
+      </form>
+    </div>
+  </details>
 </div>
