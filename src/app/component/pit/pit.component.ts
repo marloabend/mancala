@@ -1,15 +1,4 @@
-import {
-  AfterViewInit,
-  Component,
-  ElementRef,
-  EventEmitter,
-  HostListener,
-  Input,
-  OnChanges,
-  Output,
-  SimpleChanges,
-  ViewChild
-} from '@angular/core';
+import {AfterViewInit, Component, effect, ElementRef, HostListener, input, output, ViewChild} from '@angular/core';
 import * as d3 from 'd3';
 import {Selection} from 'd3';
 
@@ -22,44 +11,44 @@ interface NodeData extends d3.SimulationNodeDatum {
   templateUrl: './pit.component.html',
   styleUrls: ['./pit.component.scss'],
 })
-export class PitComponent implements AfterViewInit, OnChanges {
+export class PitComponent implements AfterViewInit {
 
-  @Input() disabled = false;
-  @Input() value = 0;
+  disabled = input(false);
+  value = input(0);
 
-  @Output() selectPit = new EventEmitter<void>();
+  selectPit = output<void>();
 
-  @ViewChild('pit') canvas: ElementRef<HTMLCanvasElement>;
+  @ViewChild('pit') canvas!: ElementRef<HTMLCanvasElement>;
 
-  @HostListener('window:resize', ['$event']) onResize() {
+  @HostListener('window:resize') onResize() {
     if (this.canvas) {
       this.initChart();
     }
   }
 
-  private size: number;
+  private size!: number;
   private data: NodeData[] = [];
-  private svg: Selection<SVGGElement, unknown, null, undefined>;
-  private nodes: Selection<SVGCircleElement, NodeData, SVGElement, any>;
+  private svg!: Selection<SVGGElement, unknown, null, undefined>;
+  private nodes!: Selection<SVGCircleElement, NodeData, SVGElement, any>;
 
-  ngAfterViewInit(): void {
-    this.initChart();
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-    if ('value' in changes) {
-      this.data = Array(this.value || 0)
+  constructor() {
+    effect(() => {
+      this.data = Array(this.value() || 0)
         .fill(0)
         .map((_, i) => ({id: i}));
 
       if (this.svg) {
         this.updateChart();
       }
-    }
+    });
+  }
+
+  ngAfterViewInit(): void {
+    this.initChart();
   }
 
   onClick(): void {
-    if (!this.disabled) {
+    if (!this.disabled()) {
       this.selectPit.emit();
     }
   }
@@ -81,7 +70,7 @@ export class PitComponent implements AfterViewInit, OnChanges {
   }
 
   updateChart(): void {
-    const radius = this.size / (this.value * 0.2 + 8);
+    const radius = this.size / (this.value() * 0.2 + 8);
 
     this.nodes = this.svg
       .selectAll('circle')

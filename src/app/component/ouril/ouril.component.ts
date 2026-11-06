@@ -1,22 +1,28 @@
-import {Component} from '@angular/core';
+import {Component, signal} from '@angular/core';
 import {Ouril, Variant} from './ouril';
 import {Player} from '../../type/player.type';
 import {Pit} from '../../model/pit.model';
 import {Stats} from '../../model/player-stats.model';
+import {PitComponent} from '../pit/pit.component';
+import {FormsModule} from '@angular/forms';
 
 @Component({
   selector: 'app-ouril',
   templateUrl: './ouril.component.html',
   styleUrls: ['./ouril.component.scss'],
+  imports: [
+    PitComponent,
+    FormsModule,
+  ],
 })
 export class OurilComponent {
 
   variant: Variant = 'default';
-  game: Ouril;
-  pits: { [key in Player]: Pit[] };
-  currentPlayer: Player;
-  stats: Stats;
-  validMoves: number[];
+  game!: Ouril;
+  pits!: { [key in Player]: Pit[] };
+  currentPlayer = signal<Player>('A');
+  stats = signal<Stats>(new Stats());
+  validMoves = signal<number[]>([]);
   autoMovesString = '';
   autoMoveLoopTime = 500;
   autoMoveInterval!: any;
@@ -62,9 +68,9 @@ export class OurilComponent {
       A: this.game.getPits('A'),
       B: this.game.getPits('B').reverse()
     };
-    this.currentPlayer = this.game.getCurrentPlayer();
-    this.stats = this.game.getStats();
-    this.validMoves = this.game.getValidMoves();
+    this.currentPlayer.set(this.game.getCurrentPlayer());
+    this.stats.set(this.game.getStats());
+    this.validMoves.set(this.game.getValidMoves());
   }
 
   private move(index: number): void {
